@@ -185,7 +185,10 @@ export default function App() {
 
   const handleLoginSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (loginForm.id === 'admin' && loginForm.password === '123456') {
+    const validId = import.meta.env.VITE_ADMIN_ID || 'admin';
+    const validPassword = import.meta.env.VITE_ADMIN_PASSWORD || '123456';
+    
+    if (loginForm.id === validId && loginForm.password === validPassword) {
       setIsLoggedIn(true);
       setLoginForm({ id: '', password: '' });
     } else {
