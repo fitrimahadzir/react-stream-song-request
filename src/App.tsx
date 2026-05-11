@@ -26,7 +26,16 @@ import {
   Disc,
   Home,
   Plus,
-  Bell
+  Bell,
+  Radio,
+  Calendar,
+  Clock,
+  Save,
+  Code,
+  Lock,
+  ChevronRight,
+  ChevronDown,
+  LogOut
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '@/src/lib/utils';
@@ -114,6 +123,7 @@ export default function App() {
   const [changePasswordForm, setChangePasswordForm] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [changePasswordStatus, setChangePasswordStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const [isSecurityExpanded, setIsSecurityExpanded] = useState(false);
 
   const [nextLiveConfig, setNextLiveConfig] = useState({
     show: true,
@@ -397,50 +407,63 @@ export default function App() {
 
               {/* Song Request Form Section */}
               <section className="mt-12 px-4 w-full max-w-sm">
-                <div className="bg-[#11141b]/50 border border-white/5 rounded-2xl p-8 space-y-8 flex flex-col items-center">
-                  <div className="space-y-2 text-center">
-                    <h2 className="text-lg font-semibold text-brand-light/40 tracking-tight">
-                      Form Permintaan Lagu
-                    </h2>
+                <div className="bg-[#11141b]/50 border border-white/5 rounded-[20px] p-5">
+                  <div className="flex items-center gap-2.5 text-white mb-5">
+                    <Music className="w-5 h-5 text-emerald-400" />
+                    <h3 className="text-[15px] font-bold tracking-wide">Form Permintaan Lagu</h3>
                   </div>
 
                   {showLiveIndicator ? (
-                    <form onSubmit={handleSubmit} className="space-y-6 w-full">
-                      <Input
-                        label="Tajuk Lagu"
-                        placeholder="Masukkan nama lagu..."
-                        icon={Music}
-                        required
-                        value={formData.songTitle}
-                        onChange={(e) => setFormData({ ...formData, songTitle: capitalizeWords(e.target.value) })}
-                      />
-                      <Input
-                        label="Nama Artis"
-                        placeholder="Siapa artisnya?"
-                        icon={User}
-                        required
-                        value={formData.artistName}
-                        onChange={(e) => setFormData({ ...formData, artistName: capitalizeWords(e.target.value) })}
-                      />
-                      <Input
-                        label="Nama Peminta"
-                        placeholder="Nama atau gelaran anda"
-                        icon={MessageSquare}
-                        required
-                        value={formData.requesterName}
-                        onChange={(e) => setFormData({ ...formData, requesterName: capitalizeWords(e.target.value) })}
-                      />
-                      <TextArea
-                        label="Mesej Dedikasi (Pilihan)"
-                        placeholder="Sebarang mesej khas untuk host?"
-                        value={formData.message}
-                        onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                      />
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] font-medium text-brand-light/40 uppercase tracking-widest px-1">Tajuk Lagu</label>
+                        <input
+                          placeholder="Masukkan nama lagu..."
+                          required
+                          value={formData.songTitle}
+                          onChange={(e) => setFormData({ ...formData, songTitle: capitalizeWords(e.target.value) })}
+                          className="w-full bg-[#181c25] border border-transparent rounded-[14px] px-4 py-3 text-sm focus:outline-none focus:border-brand-primary/40 focus:ring-1 focus:ring-brand-primary/20 transition-all text-white placeholder:text-zinc-600"
+                        />
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-1.5">
+                          <label className="text-[10px] font-medium text-brand-light/40 uppercase tracking-widest px-1">Nama Artis</label>
+                          <input
+                            placeholder="Siapa artisnya?"
+                            required
+                            value={formData.artistName}
+                            onChange={(e) => setFormData({ ...formData, artistName: capitalizeWords(e.target.value) })}
+                            className="w-full bg-[#181c25] border border-transparent rounded-[14px] px-4 py-3 text-sm focus:outline-none focus:border-brand-primary/40 focus:ring-1 focus:ring-brand-primary/20 transition-all text-white placeholder:text-zinc-600"
+                          />
+                        </div>
+                        <div className="space-y-1.5">
+                          <label className="text-[10px] font-medium text-brand-light/40 uppercase tracking-widest px-1">Nama Peminta</label>
+                          <input
+                            placeholder="Nama anda"
+                            required
+                            value={formData.requesterName}
+                            onChange={(e) => setFormData({ ...formData, requesterName: capitalizeWords(e.target.value) })}
+                            className="w-full bg-[#181c25] border border-transparent rounded-[14px] px-4 py-3 text-sm focus:outline-none focus:border-brand-primary/40 focus:ring-1 focus:ring-brand-primary/20 transition-all text-white placeholder:text-zinc-600"
+                          />
+                        </div>
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] font-medium text-brand-light/40 uppercase tracking-widest px-1">Mesej Dedikasi (Pilihan)</label>
+                        <textarea
+                          placeholder="Sebarang mesej khas untuk host?"
+                          value={formData.message}
+                          onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                          className="w-full bg-[#181c25] border border-transparent rounded-[14px] px-4 py-3 text-sm focus:outline-none focus:border-brand-primary/40 focus:ring-1 focus:ring-brand-primary/20 transition-all text-white placeholder:text-zinc-600 min-h-[100px] resize-none"
+                        />
+                      </div>
 
-                      <Button variant="primary" className="w-fit mx-auto px-8 py-4 mt-6 text-sm font-light uppercase tracking-[0.2em] rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95" type="submit">
-                        Hantar Permintaan
+                      <button
+                        type="submit"
+                        className="w-full mt-2 py-3.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 font-bold text-[13px] rounded-[14px] flex items-center justify-center gap-2 transition-all active:scale-95"
+                      >
                         <Send className="w-4 h-4" />
-                      </Button>
+                        Hantar Permintaan
+                      </button>
                     </form>
                   ) : (
                     <div className="py-8 text-center text-brand-light/50 text-sm leading-relaxed tracking-wide">
@@ -463,7 +486,10 @@ export default function App() {
             <div className="animate-in fade-in duration-500 min-h-full pb-8">
               {queueList.length === 0 ? (
                 <div className="pt-10 px-4">
-                  <h2 className="text-2xl font-semibold tracking-tight text-white mb-8 text-center uppercase tracking-widest">Queue Lagu</h2>
+                  <div className="mb-8">
+                    <h2 className="text-[26px] font-extrabold tracking-tight text-white leading-tight">Queue Lagu</h2>
+                    <p className="text-xs text-brand-light/50 mt-1 font-medium">Senarai permintaan lagu dari penonton</p>
+                  </div>
                   <div className="bg-[#11141b]/50 border border-white/5 rounded-2xl p-8 text-center text-brand-light/40 text-sm leading-relaxed tracking-wide">
                     Masih belum ada permintaan. Sila mohon di homepage jika host buka permintaan lagu.
                   </div>
@@ -587,7 +613,7 @@ export default function App() {
 
                   {/* Queue List */}
                   <div className="px-5 pt-4 pb-4 space-y-4">
-                    {queueList.slice(1).map((item) => (
+                    {queueList.slice(1).map((item, index) => (
                       <div
                         key={item.id}
                         className={cn(
@@ -601,6 +627,12 @@ export default function App() {
                           <img src={item.coverUrl || `https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=150&auto=format&fit=crop&random=${item.id}`} alt="cover" className="w-full h-full object-cover opacity-80 mix-blend-screen" />
                         </div>
                         <div className="flex-1 min-w-0 pr-12">
+                          {index === 0 && (
+                            <div className="flex items-center gap-1.5 mb-1.5">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_6px_rgba(52,211,153,0.6)]" />
+                              <span className="text-[11px] font-bold text-emerald-400/80 uppercase tracking-wider">Lagu Seterusnya</span>
+                            </div>
+                          )}
                           <h3 className="text-[16px] font-bold text-white truncate drop-shadow-sm">{item.songTitle}</h3>
                           <p className="text-sm text-white/60 truncate mt-0.5 tracking-wide">{item.artistName}</p>
                           <p className="text-[9px] text-white/50 font-medium truncate uppercase tracking-[0.2em] absolute bottom-4 right-4 pointer-events-none antialiased">
@@ -659,7 +691,10 @@ export default function App() {
 
           {activeTab === 'notifications' && (
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 pt-10 px-4 min-h-full">
-              <h2 className="text-2xl font-semibold tracking-tight text-white mb-8 text-center uppercase tracking-widest">Notifikasi</h2>
+              <div className="mb-8">
+                <h2 className="text-[26px] font-extrabold tracking-tight text-white leading-tight">Notifikasi</h2>
+                <p className="text-xs text-brand-light/50 mt-1 font-medium">Pengumuman dan pemberitahuan terkini</p>
+              </div>
               
               <div className="space-y-4 pb-8">
                 {/* Dynamic Next Live Notification */}
@@ -706,10 +741,27 @@ export default function App() {
 
           {activeTab === 'settings' && (
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 pt-10 px-4">
-              <h2 className="text-2xl font-semibold tracking-tight text-white mb-8 text-center uppercase tracking-widest">Settings Admin</h2>
+              {/* Header */}
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-[26px] font-extrabold tracking-tight text-white leading-tight">Settings</h2>
+                  <p className="text-xs text-brand-light/50 mt-1 font-medium">Manage live, notifications & security</p>
+                </div>
+                {isLoggedIn && (
+                  <div className="flex items-center gap-3 bg-[#11141b]/50 border border-white/5 pl-4 pr-1.5 py-1.5 rounded-full shadow-lg">
+                    <div className="text-right hidden sm:block">
+                      <p className="text-[10px] text-brand-light/50 uppercase tracking-widest font-bold">Admin</p>
+                      <p className="text-xs font-bold text-emerald-400">{loggedInUsername}</p>
+                    </div>
+                    <div className="w-8 h-8 rounded-full border border-emerald-500/30 overflow-hidden bg-emerald-500/10 p-0.5">
+                      <img src="/images/dp.jpeg" alt="Admin" className="w-full h-full rounded-full object-cover" />
+                    </div>
+                  </div>
+                )}
+              </div>
 
               {!isLoggedIn ? (
-                <div className="bg-[#11141b]/50 border border-white/5 rounded-2xl p-8 space-y-6">
+                <div className="bg-[#11141b]/50 border border-white/5 rounded-[20px] p-8 space-y-6">
                   <div className="space-y-2 text-center">
                     <h3 className="text-lg font-medium text-brand-light">Admin Login</h3>
                     <p className="text-xs text-brand-light/50">Sila masukkan ID dan Password untuk mengakses tetapan.</p>
@@ -738,259 +790,289 @@ export default function App() {
                   </form>
                 </div>
               ) : (
-                <div className="space-y-6">
-                  {/* Greeting */}
-                  <div className="bg-[#11141b]/50 border border-brand-primary/20 rounded-2xl p-5">
-                    <p className="text-sm font-medium text-white">
-                      Hi, <span className="text-emerald-400">{loggedInUsername}</span>
-                    </p>
-                  </div>
-                  <div className="bg-[#11141b]/50 border border-white/5 rounded-2xl p-6 flex items-center justify-between">
+                <div className="space-y-5">
+                  {/* Live Settings Section */}
+                  <div className="bg-[#11141b]/50 border border-white/5 rounded-[20px] p-5 space-y-4">
+                    <div className="flex items-center gap-2.5 text-emerald-400 mb-2">
+                      <Radio className="w-5 h-5" />
+                      <h3 className="text-[15px] font-bold tracking-wide text-white">Live Settings</h3>
+                    </div>
+                    
                     <div className="space-y-1">
-                      <h3 className="text-sm font-medium text-white">Live Indicator</h3>
-                      <p className="text-[11px] text-brand-light/50">Paparkan status LIVE pada gambar profil</p>
-                    </div>
-                    <button
-                      onClick={async () => {
-                        const newStatus = !showLiveIndicator;
-                        setShowLiveIndicator(newStatus);
-                        
-                        // Update Supabase
-                        await supabase
-                          .from('app_settings')
-                          .update({ value: { show: newStatus } })
-                          .eq('id', 'live_status');
+                      {/* Live Indicator Toggle */}
+                      <div className="flex items-center justify-between py-2 border-b border-white/5">
+                        <div className="flex items-center gap-3">
+                          <Radio className="w-4 h-4 text-brand-light/40" />
+                          <div>
+                            <p className="text-sm text-brand-light/90 font-medium">Live Indicator</p>
+                            <p className="text-[10px] text-brand-light/40 mt-0.5">Show LIVE status on profile</p>
+                          </div>
+                        </div>
+                        <button
+                          onClick={async () => {
+                            const newStatus = !showLiveIndicator;
+                            setShowLiveIndicator(newStatus);
+                            await supabase.from('app_settings').update({ value: { show: newStatus } }).eq('id', 'live_status');
+                            if (!newStatus) {
+                              const { error } = await supabase.from('song_requests').delete().neq('id', 0);
+                              if (error) console.error('Gagal memadam queue:', error);
+                            }
+                          }}
+                          className={cn(
+                            "w-11 h-6 rounded-full transition-colors relative shadow-inner",
+                            showLiveIndicator ? "bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.3)]" : "bg-white/10"
+                          )}
+                        >
+                          <span className={cn(
+                            "absolute top-1 left-1 bg-white w-4 h-4 rounded-full transition-transform shadow-md",
+                            showLiveIndicator ? "translate-x-5" : "translate-x-0"
+                          )} />
+                        </button>
+                      </div>
 
-                        if (!newStatus) {
-                          // Padam semua bila OFF
-                          const { error } = await supabase
-                            .from('song_requests')
-                            .delete()
-                            .neq('id', 0);
-                          if (error) console.error('Gagal memadam queue:', error);
-                        }
-                      }}
-                      className={cn(
-                        "w-12 h-6 rounded-full transition-colors relative",
-                        showLiveIndicator ? "bg-emerald-600" : "bg-white/10"
-                      )}
-                    >
-                      <span className={cn(
-                        "absolute top-1 left-1 bg-white w-4 h-4 rounded-full transition-transform",
-                        showLiveIndicator ? "translate-x-6" : "translate-x-0"
-                      )} />
-                    </button>
+                      {/* Notifikasi Next Live Toggle */}
+                      <div className="flex items-center justify-between py-2">
+                        <div className="flex items-center gap-3">
+                          <Bell className="w-4 h-4 text-brand-light/40" />
+                          <div>
+                            <p className="text-sm text-brand-light/90 font-medium">Notifikasi Next Live</p>
+                            <p className="text-[10px] text-brand-light/40 mt-0.5">Announce next broadcast</p>
+                          </div>
+                        </div>
+                        <button
+                          onClick={async () => {
+                            const newConfig = { ...nextLiveConfig, show: !nextLiveConfig.show };
+                            setNextLiveConfig(newConfig);
+                            await supabase.from('app_settings').update({ value: newConfig }).eq('id', 'next_live_config');
+                          }}
+                          className={cn(
+                            "w-11 h-6 rounded-full transition-colors relative shadow-inner",
+                            nextLiveConfig.show ? "bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.3)]" : "bg-white/10"
+                          )}
+                        >
+                          <span className={cn(
+                            "absolute top-1 left-1 bg-white w-4 h-4 rounded-full transition-transform shadow-md",
+                            nextLiveConfig.show ? "translate-x-5" : "translate-x-0"
+                          )} />
+                        </button>
+                      </div>
+                    </div>
                   </div>
 
-                  {/* Tetapan Notifikasi Next Live */}
-                  <div className="bg-[#11141b]/50 border border-white/5 rounded-2xl p-6 space-y-4">
-                    <div className="flex items-center justify-between pb-2 border-b border-white/5">
-                      <div className="space-y-1">
-                        <h3 className="text-sm font-medium text-white">Notifikasi Next Live</h3>
-                        <p className="text-[11px] text-brand-light/50">Kawal pengumuman live seterusnya</p>
-                      </div>
-                      <button
-                        onClick={async () => {
-                          const newConfig = { ...nextLiveConfig, show: !nextLiveConfig.show };
-                          setNextLiveConfig(newConfig);
-                          await supabase
-                            .from('app_settings')
-                            .update({ value: newConfig })
-                            .eq('id', 'next_live_config');
-                        }}
-                        className={cn(
-                          "w-12 h-6 rounded-full transition-colors relative",
-                          nextLiveConfig.show ? "bg-emerald-600" : "bg-white/10"
-                        )}
-                      >
-                        <span className={cn(
-                          "absolute top-1 left-1 bg-white w-4 h-4 rounded-full transition-transform",
-                          nextLiveConfig.show ? "translate-x-6" : "translate-x-0"
-                        )} />
-                      </button>
+                  {/* Live Schedule Section */}
+                  <div className="bg-[#11141b]/50 border border-white/5 rounded-[20px] p-5">
+                    <div className="flex items-center gap-2.5 text-white mb-5">
+                      <Calendar className="w-5 h-5 text-emerald-400" />
+                      <h3 className="text-[15px] font-bold tracking-wide">Live Schedule</h3>
                     </div>
-
-                    {nextLiveConfig.show && (
-                      <div className="space-y-4 pt-2">
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-2 gap-3">
                         <div className="space-y-1.5">
-                          <label className="text-[11px] font-bold text-brand-light/40 uppercase tracking-widest px-1">Tarikh Live</label>
-                          <input
-                            type="text"
-                            value={nextLiveConfig.date}
-                            onChange={(e) => setNextLiveConfig({...nextLiveConfig, date: e.target.value})}
-                            placeholder="Contoh: Hari ini, Esok, 25 Nov"
-                            className="w-full bg-[#0d1016] border border-white/5 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-primary/40 focus:ring-1 focus:ring-brand-primary/20 transition-all text-white placeholder:text-zinc-600"
-                          />
+                          <label className="text-[10px] font-medium text-brand-light/40 uppercase tracking-widest px-1">Tarikh Live</label>
+                          <div className="relative">
+                            <input
+                              type="text"
+                              value={nextLiveConfig.date}
+                              onChange={(e) => setNextLiveConfig({...nextLiveConfig, date: e.target.value})}
+                              placeholder="Contoh: Hari ini"
+                              className="w-full bg-[#181c25] border border-transparent rounded-[14px] pl-4 pr-10 py-3 text-sm focus:outline-none focus:border-brand-primary/40 focus:ring-1 focus:ring-brand-primary/20 transition-all text-white placeholder:text-zinc-600"
+                            />
+                            <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-light/30 pointer-events-none" />
+                          </div>
                         </div>
                         <div className="space-y-1.5">
-                          <label className="text-[11px] font-bold text-brand-light/40 uppercase tracking-widest px-1">Masa Live</label>
-                          <input
-                            type="text"
-                            value={nextLiveConfig.time}
-                            onChange={(e) => setNextLiveConfig({...nextLiveConfig, time: e.target.value})}
-                            placeholder="Contoh: 9:00 Malam"
-                            className="w-full bg-[#0d1016] border border-white/5 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-primary/40 focus:ring-1 focus:ring-brand-primary/20 transition-all text-white placeholder:text-zinc-600"
-                          />
+                          <label className="text-[10px] font-medium text-brand-light/40 uppercase tracking-widest px-1">Masa Live</label>
+                          <div className="relative">
+                            <input
+                              type="text"
+                              value={nextLiveConfig.time}
+                              onChange={(e) => setNextLiveConfig({...nextLiveConfig, time: e.target.value})}
+                              placeholder="Contoh: 9:00 PM"
+                              className="w-full bg-[#181c25] border border-transparent rounded-[14px] pl-4 pr-10 py-3 text-sm focus:outline-none focus:border-brand-primary/40 focus:ring-1 focus:ring-brand-primary/20 transition-all text-white placeholder:text-zinc-600"
+                            />
+                            <Clock className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-light/30 pointer-events-none" />
+                          </div>
                         </div>
-                        <div className="space-y-1.5">
-                          <label className="text-[11px] font-bold text-brand-light/40 uppercase tracking-widest px-1">Jenis Live</label>
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] font-medium text-brand-light/40 uppercase tracking-widest px-1">Jenis Live</label>
+                        <div className="relative">
                           <select
                             value={nextLiveConfig.type}
                             onChange={(e) => setNextLiveConfig({...nextLiveConfig, type: e.target.value})}
-                            className="w-full bg-[#0d1016] border border-white/5 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-primary/40 focus:ring-1 focus:ring-brand-primary/20 transition-all text-white appearance-none"
+                            className="w-full bg-[#181c25] border border-transparent rounded-[14px] pl-4 pr-10 py-3 text-sm focus:outline-none focus:border-brand-primary/40 focus:ring-1 focus:ring-brand-primary/20 transition-all text-white appearance-none"
                           >
                             <option value="Live PK">Live PK</option>
                             <option value="Live Dengar Lagu">Live Dengar Lagu</option>
                             <option value="Lain-lain">Lain-lain</option>
                           </select>
+                          <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-light/30 pointer-events-none" />
                         </div>
-                        <Button 
-                          variant="primary" 
-                          className="w-full py-2.5 text-xs mt-2"
-                          onClick={async () => {
-                            const { error } = await supabase
-                              .from('app_settings')
-                              .update({ value: nextLiveConfig })
-                              .eq('id', 'next_live_config');
-                            if (error) alert('Gagal menyimpan tetapan.');
-                            else alert('Tetapan disimpan!');
-                          }}
-                        >
-                          Simpan Tetapan Live
-                        </Button>
                       </div>
-                    )}
-                  </div>
-
-                  <div className="bg-[#11141b]/50 border border-white/5 rounded-2xl p-6 flex items-center justify-between">
-                    <div className="space-y-1">
-                      <h3 className="text-sm font-medium text-white">Dev Mode</h3>
-                      <p className="text-[11px] text-brand-light/50">Muatkan 10 contoh lagu ke dalam queue</p>
-                    </div>
-                    <button
-                      onClick={() => {
-                        setIsDevMode(!isDevMode);
-                        if (!isDevMode) loadSampleData();
-                      }}
-                      className={cn(
-                        "w-12 h-6 rounded-full transition-colors relative",
-                        isDevMode ? "bg-emerald-500" : "bg-white/10"
-                      )}
-                    >
-                      <span className={cn(
-                        "absolute top-1 left-1 bg-white w-4 h-4 rounded-full transition-transform",
-                        isDevMode ? "translate-x-6" : "translate-x-0"
-                      )} />
-                    </button>
-                  </div>
-
-                  {/* Tukar Kata Laluan */}
-                  <div className="bg-[#11141b]/50 border border-white/5 rounded-2xl p-6 space-y-4">
-                    <div className="flex items-center justify-between pb-2 border-b border-white/5">
-                      <div className="space-y-1">
-                        <h3 className="text-sm font-medium text-white">Tukar Kata Laluan</h3>
-                        <p className="text-[11px] text-brand-light/50">Hanya anda yang tahu kata laluan baharu anda</p>
-                      </div>
-                    </div>
-                    <form
-                      onSubmit={async (e) => {
-                        e.preventDefault();
-                        if (changePasswordForm.newPassword !== changePasswordForm.confirmPassword) {
-                          setChangePasswordStatus({ type: 'error', message: 'Kata laluan baharu tidak sepadan.' });
-                          return;
-                        }
-                        if (changePasswordForm.newPassword.length < 6) {
-                          setChangePasswordStatus({ type: 'error', message: 'Kata laluan mestilah sekurang-kurangnya 6 aksara.' });
-                          return;
-                        }
-                        setIsChangingPassword(true);
-                        setChangePasswordStatus(null);
-                        const { data, error } = await supabase.rpc('change_admin_password', {
-                          p_id: loggedInUsername,
-                          p_old_password: changePasswordForm.currentPassword,
-                          p_new_password: changePasswordForm.newPassword
-                        });
-                        setIsChangingPassword(false);
-                        if (error) {
-                          console.error('Change password error:', error);
-                          setChangePasswordStatus({ type: 'error', message: 'Ralat sistem. Sila cuba lagi.' });
-                        } else if (data === true) {
-                          setChangePasswordStatus({ type: 'success', message: 'Kata laluan berjaya ditukar!' });
-                          setChangePasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
-                        } else {
-                          setChangePasswordStatus({ type: 'error', message: 'Kata laluan semasa tidak betul.' });
-                        }
-                      }}
-                      className="space-y-3"
-                    >
-                      <div className="space-y-1.5">
-                        <label className="text-[11px] font-bold text-brand-light/40 uppercase tracking-widest px-1">Kata Laluan Semasa</label>
-                        <input
-                          type="password"
-                          value={changePasswordForm.currentPassword}
-                          onChange={(e) => setChangePasswordForm({ ...changePasswordForm, currentPassword: e.target.value })}
-                          placeholder="••••••"
-                          required
-                          className="w-full bg-[#0d1016] border border-white/5 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-primary/40 focus:ring-1 focus:ring-brand-primary/20 transition-all text-white placeholder:text-zinc-600"
-                        />
-                      </div>
-                      <div className="space-y-1.5">
-                        <label className="text-[11px] font-bold text-brand-light/40 uppercase tracking-widest px-1">Kata Laluan Baharu</label>
-                        <input
-                          type="password"
-                          value={changePasswordForm.newPassword}
-                          onChange={(e) => setChangePasswordForm({ ...changePasswordForm, newPassword: e.target.value })}
-                          placeholder="Min. 6 aksara"
-                          required
-                          className="w-full bg-[#0d1016] border border-white/5 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-primary/40 focus:ring-1 focus:ring-brand-primary/20 transition-all text-white placeholder:text-zinc-600"
-                        />
-                      </div>
-                      <div className="space-y-1.5">
-                        <label className="text-[11px] font-bold text-brand-light/40 uppercase tracking-widest px-1">Sahkan Kata Laluan Baharu</label>
-                        <input
-                          type="password"
-                          value={changePasswordForm.confirmPassword}
-                          onChange={(e) => setChangePasswordForm({ ...changePasswordForm, confirmPassword: e.target.value })}
-                          placeholder="Taip semula kata laluan baharu"
-                          required
-                          className="w-full bg-[#0d1016] border border-white/5 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-primary/40 focus:ring-1 focus:ring-brand-primary/20 transition-all text-white placeholder:text-zinc-600"
-                        />
-                      </div>
-                      {changePasswordStatus && (
-                        <div className={cn(
-                          "text-xs font-medium px-3 py-2.5 rounded-lg text-center",
-                          changePasswordStatus.type === 'success'
-                            ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-                            : "bg-red-500/10 text-red-400 border border-red-500/20"
-                        )}>
-                          {changePasswordStatus.message}
-                        </div>
-                      )}
-                      <Button
-                        variant="primary"
-                        className="w-full py-2.5 text-xs mt-1"
-                        type="submit"
-                        disabled={isChangingPassword}
+                      <button
+                        onClick={async () => {
+                          const { error } = await supabase.from('app_settings').update({ value: nextLiveConfig }).eq('id', 'next_live_config');
+                          if (error) alert('Gagal menyimpan tetapan.');
+                          else alert('Tetapan disimpan!');
+                        }}
+                        className="w-full mt-2 py-3.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 font-bold text-[13px] rounded-[14px] flex items-center justify-center gap-2 transition-all active:scale-95"
                       >
-                        {isChangingPassword ? 'Menyimpan...' : 'Simpan Kata Laluan Baharu'}
-                      </Button>
-                    </form>
+                        <Save className="w-4 h-4" />
+                        Simpan Tetapan Live
+                      </button>
+                    </div>
                   </div>
 
-                  <div className="bg-[#11141b]/50 border border-white/5 rounded-2xl p-6">
-                    <Button
-                      variant="outline"
-                      className="w-full"
-                      onClick={() => {
-                        setIsLoggedIn(false);
-                        setActiveTab('dashboard');
-                        setChangePasswordStatus(null);
-                        setChangePasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
-                      }}
-                    >
-                      Log Keluar
-                    </Button>
+                  {/* System Section */}
+                  <div className="bg-[#11141b]/50 border border-white/5 rounded-[20px] p-5">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3 text-white">
+                        <Code className="w-5 h-5 text-emerald-400" />
+                        <div>
+                          <h3 className="text-[15px] font-bold tracking-wide">Dev Mode</h3>
+                          <p className="text-[10px] text-brand-light/40 mt-0.5">Enable advanced debugging tools</p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => {
+                          setIsDevMode(!isDevMode);
+                          if (!isDevMode) loadSampleData();
+                        }}
+                        className={cn(
+                          "w-11 h-6 rounded-full transition-colors relative shadow-inner",
+                          isDevMode ? "bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.3)]" : "bg-white/10"
+                        )}
+                      >
+                        <span className={cn(
+                          "absolute top-1 left-1 bg-white w-4 h-4 rounded-full transition-transform shadow-md",
+                          isDevMode ? "translate-x-5" : "translate-x-0"
+                        )} />
+                      </button>
+                    </div>
                   </div>
+
+                  {/* Security Section */}
+                  <div className="bg-[#11141b]/50 border border-white/5 rounded-[20px] overflow-hidden transition-all duration-300">
+                    <button
+                      onClick={() => setIsSecurityExpanded(!isSecurityExpanded)}
+                      className="w-full p-5 flex items-center justify-between bg-transparent hover:bg-white/[0.02] transition-colors"
+                    >
+                      <div className="flex items-center gap-3 text-white">
+                        <Lock className="w-5 h-5 text-emerald-400" />
+                        <h3 className="text-[15px] font-bold tracking-wide">Security</h3>
+                      </div>
+                      {isSecurityExpanded ? <ChevronDown className="w-5 h-5 text-brand-light/40" /> : <ChevronRight className="w-5 h-5 text-brand-light/40" />}
+                    </button>
+                    <AnimatePresence>
+                      {isSecurityExpanded && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          className="overflow-hidden"
+                        >
+                          <div className="px-5 pb-5 pt-2 border-t border-white/5">
+                            <form
+                              onSubmit={async (e) => {
+                                e.preventDefault();
+                                if (changePasswordForm.newPassword !== changePasswordForm.confirmPassword) {
+                                  setChangePasswordStatus({ type: 'error', message: 'Kata laluan baharu tidak sepadan.' });
+                                  return;
+                                }
+                                if (changePasswordForm.newPassword.length < 6) {
+                                  setChangePasswordStatus({ type: 'error', message: 'Kata laluan mestilah sekurang-kurangnya 6 aksara.' });
+                                  return;
+                                }
+                                setIsChangingPassword(true);
+                                setChangePasswordStatus(null);
+                                const { data, error } = await supabase.rpc('change_admin_password', {
+                                  p_id: loggedInUsername,
+                                  p_old_password: changePasswordForm.currentPassword,
+                                  p_new_password: changePasswordForm.newPassword
+                                });
+                                setIsChangingPassword(false);
+                                if (error) {
+                                  console.error('Change password error:', error);
+                                  setChangePasswordStatus({ type: 'error', message: 'Ralat sistem. Sila cuba lagi.' });
+                                } else if (data === true) {
+                                  setChangePasswordStatus({ type: 'success', message: 'Kata laluan berjaya ditukar!' });
+                                  setChangePasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
+                                } else {
+                                  setChangePasswordStatus({ type: 'error', message: 'Kata laluan semasa tidak betul.' });
+                                }
+                              }}
+                              className="space-y-3"
+                            >
+                              <div className="space-y-1.5">
+                                <label className="text-[10px] font-medium text-brand-light/40 uppercase tracking-widest px-1">Kata Laluan Semasa</label>
+                                <input
+                                  type="password"
+                                  value={changePasswordForm.currentPassword}
+                                  onChange={(e) => setChangePasswordForm({ ...changePasswordForm, currentPassword: e.target.value })}
+                                  placeholder="••••••"
+                                  required
+                                  className="w-full bg-[#181c25] border border-transparent rounded-[14px] px-4 py-3 text-sm focus:outline-none focus:border-brand-primary/40 focus:ring-1 focus:ring-brand-primary/20 transition-all text-white placeholder:text-zinc-600"
+                                />
+                              </div>
+                              <div className="space-y-1.5">
+                                <label className="text-[10px] font-medium text-brand-light/40 uppercase tracking-widest px-1">Kata Laluan Baharu</label>
+                                <input
+                                  type="password"
+                                  value={changePasswordForm.newPassword}
+                                  onChange={(e) => setChangePasswordForm({ ...changePasswordForm, newPassword: e.target.value })}
+                                  placeholder="Min. 6 aksara"
+                                  required
+                                  className="w-full bg-[#181c25] border border-transparent rounded-[14px] px-4 py-3 text-sm focus:outline-none focus:border-brand-primary/40 focus:ring-1 focus:ring-brand-primary/20 transition-all text-white placeholder:text-zinc-600"
+                                />
+                              </div>
+                              <div className="space-y-1.5">
+                                <label className="text-[10px] font-medium text-brand-light/40 uppercase tracking-widest px-1">Sahkan Kata Laluan Baharu</label>
+                                <input
+                                  type="password"
+                                  value={changePasswordForm.confirmPassword}
+                                  onChange={(e) => setChangePasswordForm({ ...changePasswordForm, confirmPassword: e.target.value })}
+                                  placeholder="Taip semula kata laluan baharu"
+                                  required
+                                  className="w-full bg-[#181c25] border border-transparent rounded-[14px] px-4 py-3 text-sm focus:outline-none focus:border-brand-primary/40 focus:ring-1 focus:ring-brand-primary/20 transition-all text-white placeholder:text-zinc-600"
+                                />
+                              </div>
+                              {changePasswordStatus && (
+                                <div className={cn(
+                                  "text-xs font-medium px-3 py-2.5 rounded-[14px] text-center",
+                                  changePasswordStatus.type === 'success'
+                                    ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                                    : "bg-red-500/10 text-red-400 border border-red-500/20"
+                                )}>
+                                  {changePasswordStatus.message}
+                                </div>
+                              )}
+                              <button
+                                className="w-full py-3.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 font-bold text-[13px] rounded-[14px] flex items-center justify-center gap-2 transition-all active:scale-95"
+                                type="submit"
+                                disabled={isChangingPassword}
+                              >
+                                {isChangingPassword ? 'Menyimpan...' : 'Simpan Kata Laluan Baharu'}
+                              </button>
+                            </form>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+
+                  {/* Account Section */}
+                  <button
+                    onClick={() => {
+                      setIsLoggedIn(false);
+                      setActiveTab('dashboard');
+                      setChangePasswordStatus(null);
+                      setChangePasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
+                    }}
+                    className="w-full py-4 border border-white/5 rounded-[20px] text-brand-light hover:bg-white/[0.02] transition-all flex items-center justify-center gap-2 font-semibold text-[13px] active:scale-95"
+                  >
+                    <LogOut className="w-4 h-4 text-red-400" />
+                    <span className="text-red-400">Logout</span>
+                  </button>
                 </div>
               )}
             </div>
