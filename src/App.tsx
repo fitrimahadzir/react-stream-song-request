@@ -744,7 +744,7 @@ export default function App() {
               {/* Header */}
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <h2 className="text-[26px] font-extrabold tracking-tight text-white leading-tight">Settings</h2>
+                  <h2 className="text-[26px] font-extrabold tracking-tight text-white leading-tight">Admin Panel</h2>
                   <p className="text-xs text-brand-light/50 mt-1 font-medium">Manage live, notifications & security</p>
                 </div>
                 {isLoggedIn && (
@@ -1080,26 +1080,30 @@ export default function App() {
         </main>
 
         {/* Floating Bottom Navigation */}
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-48px)] max-w-[320px] z-[100]">
-          <nav className="bg-[#11141b]/90 backdrop-blur-xl border border-white/10 px-6 py-2.5 rounded-[32px] flex justify-between items-center shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-40px)] max-w-[380px] z-[100]">
+          <nav className="bg-[#11141b]/90 backdrop-blur-xl border border-white/10 px-4 py-2.5 rounded-[32px] flex justify-between items-center shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
             <NavButton
               active={activeTab === 'dashboard'}
               icon={Home}
+              label="Utama"
               onClick={() => setActiveTab('dashboard')}
             />
             <NavButton
               active={activeTab === 'queue'}
               icon={ListMusic}
+              label="Queue"
               onClick={() => setActiveTab('queue')}
             />
             <NavButton
               active={activeTab === 'notifications'}
               icon={Bell}
+              label="Notifikasi"
               onClick={() => setActiveTab('notifications')}
             />
             <NavButton
               active={activeTab === 'settings'}
               icon={User}
+              label="Admin Panel"
               onClick={() => setActiveTab('settings')}
             />
           </nav>
@@ -1188,22 +1192,29 @@ export default function App() {
   );
 }
 
-function NavButton({ icon: Icon, active, onClick }: { icon: any; active: boolean; onClick: () => void }) {
+function NavButton({ icon: Icon, label, active, onClick }: { icon: any; label: string; active: boolean; onClick: () => void }) {
   return (
     <button
       onClick={onClick}
       className={cn(
-        "flex flex-col items-center justify-center w-12 h-12 transition-all duration-300 relative rounded-full",
-        active ? "text-emerald-400" : "text-white/20 hover:text-white/40"
+        "flex items-center justify-center transition-all duration-300 rounded-full",
+        active ? "bg-emerald-500/15 text-emerald-400 px-5 py-2.5 gap-2" : "text-white/40 hover:text-white/60 p-2.5"
       )}
     >
-      <Icon className={cn("w-6 h-6", active && "stroke-[2.5px] drop-shadow-[0_0_8px_rgba(52,211,153,0.5)]")} />
-      {active && (
-        <motion.div
-          layoutId="nav-dot"
-          className="absolute -bottom-1.5 w-1 h-1 bg-emerald-400 rounded-full shadow-[0_0_10px_#34d399]"
-        />
-      )}
+      <Icon className={cn("w-[22px] h-[22px] transition-all duration-300", active ? "stroke-[2.5px] drop-shadow-[0_0_8px_rgba(52,211,153,0.5)]" : "stroke-[2px]")} />
+      <AnimatePresence>
+        {active && (
+          <motion.span 
+            initial={{ opacity: 0, width: 0, scale: 0.9 }}
+            animate={{ opacity: 1, width: 'auto', scale: 1 }}
+            exit={{ opacity: 0, width: 0, scale: 0.9 }}
+            transition={{ duration: 0.2 }}
+            className="text-[12px] font-bold whitespace-nowrap overflow-hidden"
+          >
+            {label}
+          </motion.span>
+        )}
+      </AnimatePresence>
     </button>
   );
 }
