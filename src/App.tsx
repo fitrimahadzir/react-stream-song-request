@@ -30,6 +30,8 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '@/src/lib/utils';
+import { supabase } from './lib/supabase';
+import { useEffect } from 'react';
 
 // --- Components ---
 
@@ -114,7 +116,43 @@ export default function App() {
     type: 'Live Dengar Lagu'
   });
 
-  const [queueList, setQueueList] = useState<{ id: number; songTitle: string; artistName: string; requesterName: string; message?: string; coverUrl?: string; isMyRequest?: boolean }[]>([]);
+  const [queueList, setQueueList] = useState<{ id: number; songTitle: string; artistName: string; requesterName: string; message?: string; coverUrl?: string; isMyRequest?: boolean; isPlayed?: boolean }[]>([]);
+
+  useEffect(() => {
+    fetchQueue();
+
+    const channel = supabase
+      .channel('song_requests_changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'song_requests' }, () => {
+        fetchQueue();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  const fetchQueue = async () => {
+    const { data, error } = await supabase
+      .from('song_requests')
+      .select('*')
+      .order('id', { ascending: true });
+
+    if (error) {
+      console.error('Error fetching queue:', error);
+    } else if (data) {
+      setQueueList(data.map(item => ({
+        id: item.id,
+        songTitle: item.song_title,
+        artistName: item.artist_name,
+        requesterName: item.requester_name,
+        message: item.message,
+        coverUrl: item.cover_url,
+        isPlayed: item.is_played
+      })));
+    }
+  };
 
   const fetchAlbumArtwork = async (title: string, artist: string) => {
     try {
@@ -132,23 +170,23 @@ export default function App() {
 
   const loadSampleData = async () => {
     const sampleData = [
-      { id: Date.now() + 1, songTitle: 'Bunga', artistName: 'Ara Johari', requesterName: 'Ali', message: 'Lagu ni untuk someone yang special.', coverUrl: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=150&auto=format&fit=crop' },
-      { id: Date.now() + 2, songTitle: 'Kau Ilhamku', artistName: 'Man Bai', requesterName: 'Sarah', message: 'Inspirasi hidup saya!', coverUrl: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=150&auto=format&fit=crop' },
-      { id: Date.now() + 3, songTitle: 'Sumpah', artistName: 'Naim Daniel', requesterName: 'Ahmad', message: 'Sedih teringat ex.', coverUrl: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=150&auto=format&fit=crop' },
-      { id: Date.now() + 4, songTitle: 'Isabella', artistName: 'Search', requesterName: 'Zul', message: 'Lagu legend sepanjang zaman.', coverUrl: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=150&auto=format&fit=crop' },
-      { id: Date.now() + 5, songTitle: 'Peluang Kedua', artistName: 'Nabila Razali', requesterName: 'Siti', message: 'Semua orang layak dapat peluang kedua.', coverUrl: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=150&auto=format&fit=crop' },
-      { id: Date.now() + 6, songTitle: 'Mewangi', artistName: 'Akim & The Magistrate', requesterName: 'Amin', message: 'Sweet sangat lagu ni.', coverUrl: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=150&auto=format&fit=crop' },
-      { id: Date.now() + 7, songTitle: 'Terlalu Istimewa', artistName: 'Adibah Noor', requesterName: 'Bella', message: 'Al-Fatihah buat arwah.', coverUrl: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=150&auto=format&fit=crop' },
-      { id: Date.now() + 8, songTitle: 'Belaian Jiwa', artistName: 'Innuendo', requesterName: 'Johan', message: 'Lagu ni layan tengah malam best.', coverUrl: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=150&auto=format&fit=crop' },
-      { id: Date.now() + 9, songTitle: 'Suci Dalam Debu', artistName: 'Iklim', requesterName: 'Razak', message: 'Zapin sikit!', coverUrl: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=150&auto=format&fit=crop' },
-      { id: Date.now() + 10, songTitle: 'Aku Bidadari Syurgamu', artistName: 'Siti Nurhaliza', requesterName: 'Farah', message: 'Suara TokTi memang mantap.', coverUrl: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=150&auto=format&fit=crop' }
+      { song_title: 'Bunga', artist_name: 'Ara Johari', requester_name: 'Ali', message: 'Lagu ni untuk someone yang special.' },
+      { song_title: 'Kau Ilhamku', artist_name: 'Man Bai', requester_name: 'Sarah', message: 'Inspirasi hidup saya!' },
+      { song_title: 'Sumpah', artist_name: 'Naim Daniel', requester_name: 'Ahmad', message: 'Sedih teringat ex.' },
+      { song_title: 'Isabella', artist_name: 'Search', requester_name: 'Zul', message: 'Lagu legend sepanjang zaman.' },
+      { song_title: 'Peluang Kedua', artist_name: 'Nabila Razali', requester_name: 'Siti', message: 'Semua orang layak dapat peluang kedua.' },
+      { song_title: 'Mewangi', artist_name: 'Akim & The Magistrate', requester_name: 'Amin', message: 'Sweet sangat lagu ni.' },
+      { song_title: 'Terlalu Istimewa', artist_name: 'Adibah Noor', requester_name: 'Bella', message: 'Al-Fatihah buat arwah.' },
+      { song_title: 'Belaian Jiwa', artist_name: 'Innuendo', requester_name: 'Johan', message: 'Lagu ni layan tengah malam best.' },
+      { song_title: 'Suci Dalam Debu', artist_name: 'Iklim', requester_name: 'Razak', message: 'Zapin sikit!' },
+      { song_title: 'Aku Bidadari Syurgamu', artist_name: 'Siti Nurhaliza', requester_name: 'Farah', message: 'Suara TokTi memang mantap.' }
     ];
-    setQueueList(prev => [...prev, ...sampleData]);
 
-    // Async fetch real album arts
-    for (let i = 0; i < sampleData.length; i++) {
-      const coverUrl = await fetchAlbumArtwork(sampleData[i].songTitle, sampleData[i].artistName);
-      setQueueList(prev => prev.map(item => item.id === sampleData[i].id ? { ...item, coverUrl } : item));
+    for (const item of sampleData) {
+      const coverUrl = await fetchAlbumArtwork(item.song_title, item.artist_name);
+      await supabase.from('song_requests').insert([
+        { ...item, cover_url: coverUrl }
+      ]);
     }
   };
 
@@ -158,29 +196,35 @@ export default function App() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Request Sent:', formData);
-
-    const newId = Date.now();
     const { songTitle, artistName, requesterName, message } = formData;
-
-    setQueueList(prev => [...prev, {
-      id: newId,
-      songTitle: capitalizeWords(songTitle),
-      artistName: capitalizeWords(artistName),
-      requesterName: capitalizeWords(requesterName),
-      message,
-      isMyRequest: true,
-      coverUrl: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=150&auto=format&fit=crop'
-    }]);
-
-    setFormData({ songTitle: '', artistName: '', requesterName: '', message: '' });
-    setActiveTab('queue');
-    setHighlightedSongId(newId);
-    setTimeout(() => setHighlightedSongId(null), 3000);
-
-    // Fetch cover in background
+    
+    // Fetch cover first to store in DB
     const coverUrl = await fetchAlbumArtwork(songTitle, artistName);
-    setQueueList(prev => prev.map(item => item.id === newId ? { ...item, coverUrl } : item));
+
+    const { data, error } = await supabase
+      .from('song_requests')
+      .insert([
+        { 
+          song_title: capitalizeWords(songTitle), 
+          artist_name: capitalizeWords(artistName), 
+          requester_name: capitalizeWords(requesterName), 
+          message,
+          cover_url: coverUrl 
+        }
+      ])
+      .select();
+
+    if (error) {
+      alert('Gagal menghantar permintaan. Sila cuba lagi.');
+      console.error(error);
+    } else {
+      setFormData({ songTitle: '', artistName: '', requesterName: '', message: '' });
+      setActiveTab('queue');
+      if (data && data[0]) {
+        setHighlightedSongId(data[0].id);
+        setTimeout(() => setHighlightedSongId(null), 3000);
+      }
+    }
   };
 
   const handleLoginSubmit = (e: React.FormEvent) => {
@@ -196,9 +240,18 @@ export default function App() {
     }
   };
 
-  const handleDeleteQueue = (id: number) => {
-    setQueueList(prev => prev.filter(item => item.id !== id));
-    setSongToDelete(null);
+  const handleDeleteQueue = async (id: number) => {
+    const { error } = await supabase
+      .from('song_requests')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      alert('Gagal memadam lagu.');
+      console.error(error);
+    } else {
+      setSongToDelete(null);
+    }
   };
 
   return (
@@ -453,9 +506,13 @@ export default function App() {
                             )}
                           </button>
                           <button
-                            onClick={() => {
-                              if (isLoggedIn) {
-                                setQueueList(prev => prev.slice(1));
+                            onClick={async () => {
+                              if (isLoggedIn && queueList[0]) {
+                                const { error } = await supabase
+                                  .from('song_requests')
+                                  .delete()
+                                  .eq('id', queueList[0].id);
+                                if (error) console.error('Gagal melangkau lagu:', error);
                                 setIsPlaying(false);
                               }
                             }}
@@ -633,7 +690,18 @@ export default function App() {
                       <p className="text-[11px] text-brand-light/50">Paparkan status LIVE pada gambar profil</p>
                     </div>
                     <button
-                      onClick={() => setShowLiveIndicator(!showLiveIndicator)}
+                      onClick={async () => {
+                        const newStatus = !showLiveIndicator;
+                        setShowLiveIndicator(newStatus);
+                        if (!newStatus) {
+                          // Padam semua bila OFF
+                          const { error } = await supabase
+                            .from('song_requests')
+                            .delete()
+                            .neq('id', 0);
+                          if (error) console.error('Gagal memadam queue:', error);
+                        }
+                      }}
                       className={cn(
                         "w-12 h-6 rounded-full transition-colors relative",
                         showLiveIndicator ? "bg-emerald-600" : "bg-white/10"
