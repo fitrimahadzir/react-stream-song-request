@@ -120,18 +120,39 @@ export default function App() {
 
   useEffect(() => {
     fetchQueue();
+    fetchSettings();
 
-    const channel = supabase
+    const songRequestsChannel = supabase
       .channel('song_requests_changes')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'song_requests' }, () => {
         fetchQueue();
       })
       .subscribe();
 
+    const settingsChannel = supabase
+      .channel('settings_changes')
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'app_settings' }, () => {
+        fetchSettings();
+      })
+      .subscribe();
+
     return () => {
-      supabase.removeChannel(channel);
+      supabase.removeChannel(songRequestsChannel);
+      supabase.removeChannel(settingsChannel);
     };
   }, []);
+
+  const fetchSettings = async () => {
+    const { data, error } = await supabase.from('app_settings').select('*');
+    if (error) {
+      console.error('Error fetching settings:', error);
+    } else if (data) {
+      const liveStatus = data.find(s => s.id === 'live_status');
+      const nextLive = data.find(s => s.id === 'next_live_config');
+      if (liveStatus) setShowLiveIndicator(liveStatus.value.show);
+      if (nextLive) setNextLiveConfig(nextLive.value);
+    }
+  };
 
   const fetchQueue = async () => {
     const { data, error } = await supabase
@@ -693,6 +714,13 @@ export default function App() {
                       onClick={async () => {
                         const newStatus = !showLiveIndicator;
                         setShowLiveIndicator(newStatus);
+                        
+                        // Update Supabase
+                        await supabase
+                          .from('app_settings')
+                          .update({ value: { show: newStatus } })
+                          .eq('id', 'live_status');
+
                         if (!newStatus) {
                           // Padam semua bila OFF
                           const { error } = await supabase
@@ -722,7 +750,14 @@ export default function App() {
                         <p className="text-[11px] text-brand-light/50">Kawal pengumuman live seterusnya</p>
                       </div>
                       <button
-                        onClick={() => setNextLiveConfig({ ...nextLiveConfig, show: !nextLiveConfig.show })}
+                        onClick={async () => {
+                          const newConfig = { ...nextLiveConfig, show: !nextLiveConfig.show };
+                          setNextLiveConfig(newConfig);
+                          await supabase
+                            .from('app_settings')
+                            .update({ value: newConfig })
+                            .eq('id', 'next_live_config');
+                        }}
                         className={cn(
                           "w-12 h-6 rounded-full transition-colors relative",
                           nextLiveConfig.show ? "bg-emerald-600" : "bg-white/10"
@@ -769,6 +804,20 @@ export default function App() {
                             <option value="Lain-lain">Lain-lain</option>
                           </select>
                         </div>
+                        <Button 
+                          variant="primary" 
+                          className="w-full py-2.5 text-xs mt-2"
+                          onClick={async () => {
+                            const { error } = await supabase
+                              .from('app_settings')
+                              .update({ value: nextLiveConfig })
+                              .eq('id', 'next_live_config');
+                            if (error) alert('Gagal menyimpan tetapan.');
+                            else alert('Tetapan disimpan!');
+                          }}
+                        >
+                          Simpan Tetapan Live
+                        </Button>
                       </div>
                     )}
                   </div>
