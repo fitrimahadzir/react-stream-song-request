@@ -1,14 +1,23 @@
 import { createClient } from '@supabase/supabase-js';
 
-// Cuba ambil dari pelbagai kemungkinan nama (dengan atau tanpa PUBLIC)
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || import.meta.env.VITE_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.VITE_PUBLIC_SUPABASE_ANON_KEY;
+// Support semua format nama environment variable
+const supabaseUrl = 
+  import.meta.env.VITE_PUBLIC_SUPABASE_URL || 
+  import.meta.env.VITE_SUPABASE_URL;
+
+const supabaseAnonKey = 
+  import.meta.env.VITE_PUBLIC_SUPABASE_ANON_KEY || 
+  import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+// Debug log - akan kelihatan di Console (F12)
+console.log('[Supabase] URL found:', !!supabaseUrl);
+console.log('[Supabase] Key found:', !!supabaseAnonKey);
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn('Supabase URL atau Anon Key tidak dijumpai. Sila semak fail .env atau Environment Variables di Vercel.');
+  console.error('[Supabase] RALAT: Kunci tidak dijumpai! Sila semak .env atau Vercel Environment Variables.');
 }
 
 export const supabase = createClient(
-  supabaseUrl || 'https://placeholder.supabase.co', 
+  supabaseUrl || 'https://placeholder.supabase.co',
   supabaseAnonKey || 'placeholder'
 );
