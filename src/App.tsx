@@ -100,6 +100,7 @@ export default function App() {
 
   // Settings State
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loggedInUsername, setLoggedInUsername] = useState('');
   const [loginForm, setLoginForm] = useState({ id: '', password: '' });
   const [showLiveIndicator, setShowLiveIndicator] = useState(false);
   const [isDevMode, setIsDevMode] = useState(false);
@@ -108,6 +109,11 @@ export default function App() {
   const [highlightedSongId, setHighlightedSongId] = useState<number | null>(null);
   const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
   const [selectedMessage, setSelectedMessage] = useState<{ message: string; requester: string } | null>(null);
+
+  // Change Password State
+  const [changePasswordForm, setChangePasswordForm] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [changePasswordStatus, setChangePasswordStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   const [nextLiveConfig, setNextLiveConfig] = useState({
     show: true,
@@ -250,12 +256,21 @@ export default function App() {
     }
   };
 
-  const handleLoginSubmit = (e: React.FormEvent) => {
+  const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const validId = import.meta.env.VITE_ADMIN_ID || 'admin';
-    const validPassword = import.meta.env.VITE_ADMIN_PASSWORD || '123456';
-    
-    if (loginForm.id === validId && loginForm.password === validPassword) {
+    const { data, error } = await supabase.rpc('verify_admin', {
+      p_id: loginForm.id,
+      p_password: loginForm.password
+    });
+
+    if (error) {
+      console.error('Login RPC error:', error);
+      alert('Ralat semasa log masuk. Sila cuba lagi.');
+      return;
+    }
+
+    if (data === true) {
+      setLoggedInUsername(loginForm.id);
       setIsLoggedIn(true);
       setLoginForm({ id: '', password: '' });
     } else {
@@ -569,8 +584,6 @@ export default function App() {
                       </div>
                     </div>
                   </div>
-                    </div>
-                  </div>
 
                   {/* Queue List */}
                   <div className="px-5 pt-4 pb-4 space-y-4">
@@ -865,6 +878,99 @@ export default function App() {
                     </button>
                   </div>
 
+                  {/* Tukar Kata Laluan */}
+                  <div className="bg-[#11141b]/50 border border-white/5 rounded-2xl p-6 space-y-4">
+                    <div className="flex items-center justify-between pb-2 border-b border-white/5">
+                      <div className="space-y-1">
+                        <h3 className="text-sm font-medium text-white">Tukar Kata Laluan</h3>
+                        <p className="text-[11px] text-brand-light/50">Hanya anda yang tahu kata laluan baharu anda</p>
+                      </div>
+                    </div>
+                    <form
+                      onSubmit={async (e) => {
+                        e.preventDefault();
+                        if (changePasswordForm.newPassword !== changePasswordForm.confirmPassword) {
+                          setChangePasswordStatus({ type: 'error', message: 'Kata laluan baharu tidak sepadan.' });
+                          return;
+                        }
+                        if (changePasswordForm.newPassword.length < 6) {
+                          setChangePasswordStatus({ type: 'error', message: 'Kata laluan mestilah sekurang-kurangnya 6 aksara.' });
+                          return;
+                        }
+                        setIsChangingPassword(true);
+                        setChangePasswordStatus(null);
+                        const { data, error } = await supabase.rpc('change_admin_password', {
+                          p_id: loggedInUsername,
+                          p_old_password: changePasswordForm.currentPassword,
+                          p_new_password: changePasswordForm.newPassword
+                        });
+                        setIsChangingPassword(false);
+                        if (error) {
+                          console.error('Change password error:', error);
+                          setChangePasswordStatus({ type: 'error', message: 'Ralat sistem. Sila cuba lagi.' });
+                        } else if (data === true) {
+                          setChangePasswordStatus({ type: 'success', message: 'Kata laluan berjaya ditukar!' });
+                          setChangePasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
+                        } else {
+                          setChangePasswordStatus({ type: 'error', message: 'Kata laluan semasa tidak betul.' });
+                        }
+                      }}
+                      className="space-y-3"
+                    >
+                      <div className="space-y-1.5">
+                        <label className="text-[11px] font-bold text-brand-light/40 uppercase tracking-widest px-1">Kata Laluan Semasa</label>
+                        <input
+                          type="password"
+                          value={changePasswordForm.currentPassword}
+                          onChange={(e) => setChangePasswordForm({ ...changePasswordForm, currentPassword: e.target.value })}
+                          placeholder="••••••"
+                          required
+                          className="w-full bg-[#0d1016] border border-white/5 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-primary/40 focus:ring-1 focus:ring-brand-primary/20 transition-all text-white placeholder:text-zinc-600"
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="text-[11px] font-bold text-brand-light/40 uppercase tracking-widest px-1">Kata Laluan Baharu</label>
+                        <input
+                          type="password"
+                          value={changePasswordForm.newPassword}
+                          onChange={(e) => setChangePasswordForm({ ...changePasswordForm, newPassword: e.target.value })}
+                          placeholder="Min. 6 aksara"
+                          required
+                          className="w-full bg-[#0d1016] border border-white/5 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-primary/40 focus:ring-1 focus:ring-brand-primary/20 transition-all text-white placeholder:text-zinc-600"
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="text-[11px] font-bold text-brand-light/40 uppercase tracking-widest px-1">Sahkan Kata Laluan Baharu</label>
+                        <input
+                          type="password"
+                          value={changePasswordForm.confirmPassword}
+                          onChange={(e) => setChangePasswordForm({ ...changePasswordForm, confirmPassword: e.target.value })}
+                          placeholder="Taip semula kata laluan baharu"
+                          required
+                          className="w-full bg-[#0d1016] border border-white/5 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-primary/40 focus:ring-1 focus:ring-brand-primary/20 transition-all text-white placeholder:text-zinc-600"
+                        />
+                      </div>
+                      {changePasswordStatus && (
+                        <div className={cn(
+                          "text-xs font-medium px-3 py-2.5 rounded-lg text-center",
+                          changePasswordStatus.type === 'success'
+                            ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                            : "bg-red-500/10 text-red-400 border border-red-500/20"
+                        )}>
+                          {changePasswordStatus.message}
+                        </div>
+                      )}
+                      <Button
+                        variant="primary"
+                        className="w-full py-2.5 text-xs mt-1"
+                        type="submit"
+                        disabled={isChangingPassword}
+                      >
+                        {isChangingPassword ? 'Menyimpan...' : 'Simpan Kata Laluan Baharu'}
+                      </Button>
+                    </form>
+                  </div>
+
                   <div className="bg-[#11141b]/50 border border-white/5 rounded-2xl p-6">
                     <Button
                       variant="outline"
@@ -872,6 +978,8 @@ export default function App() {
                       onClick={() => {
                         setIsLoggedIn(false);
                         setActiveTab('dashboard');
+                        setChangePasswordStatus(null);
+                        setChangePasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
                       }}
                     >
                       Log Keluar
