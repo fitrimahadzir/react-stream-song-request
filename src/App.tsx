@@ -739,6 +739,12 @@ export default function App() {
                 </div>
               ) : (
                 <div className="space-y-6">
+                  {/* Greeting */}
+                  <div className="bg-[#11141b]/50 border border-brand-primary/20 rounded-2xl p-5">
+                    <p className="text-sm font-medium text-white">
+                      Hi, <span className="text-emerald-400">{loggedInUsername}</span>
+                    </p>
+                  </div>
                   <div className="bg-[#11141b]/50 border border-white/5 rounded-2xl p-6 flex items-center justify-between">
                     <div className="space-y-1">
                       <h3 className="text-sm font-medium text-white">Live Indicator</h3>
