@@ -149,8 +149,10 @@ export default function App() {
     } else if (data) {
       const liveStatus = data.find(s => s.id === 'live_status');
       const nextLive = data.find(s => s.id === 'next_live_config');
+      const playStatus = data.find(s => s.id === 'play_status');
       if (liveStatus) setShowLiveIndicator(liveStatus.value.show);
       if (nextLive) setNextLiveConfig(nextLive.value);
+      if (playStatus) setIsPlaying(playStatus.value.playing);
     }
   };
 
@@ -500,54 +502,73 @@ export default function App() {
                         )}
                       </div>
 
-                      {/* Play Controls (Host or Viewer) */}
+                      {/* Play Controls - Admin sahaja nampak butang, User nampak indicator */}
                       <div className="flex-col gap-2">
-                        <div className="flex items-center gap-3 pb-2 pt-2">
-                          <button
-                            onClick={() => isLoggedIn && setIsPlaying(!isPlaying)}
-                            disabled={!isLoggedIn}
-                            className={cn(
-                              "flex-1 flex items-center justify-center gap-2 text-white text-sm font-bold tracking-wide uppercase py-3.5 rounded-[16px] transition-all",
-                              isLoggedIn ? "hover:scale-[1.02] active:scale-95 cursor-pointer" : "cursor-not-allowed opacity-80",
-                              isPlaying
-                                ? "bg-emerald-600 animate-pulse shadow-lg shadow-emerald-600/30"
-                                : "bg-emerald-500/30 border border-emerald-500/50 hover:bg-emerald-500/40"
-                            )}
-                          >
+                        {isLoggedIn ? (
+                          /* Admin View: Butang Play & Next */
+                          <div className="flex items-center gap-3 pb-2 pt-2">
+                            <button
+                              onClick={async () => {
+                                const newPlaying = !isPlaying;
+                                setIsPlaying(newPlaying);
+                                await supabase
+                                  .from('app_settings')
+                                  .update({ value: { playing: newPlaying } })
+                                  .eq('id', 'play_status');
+                              }}
+                              className={cn(
+                                "flex-1 flex items-center justify-center gap-2 text-white text-sm font-bold tracking-wide uppercase py-3.5 rounded-[16px] transition-all hover:scale-[1.02] active:scale-95 cursor-pointer",
+                                isPlaying
+                                  ? "bg-emerald-600 animate-pulse shadow-lg shadow-emerald-600/30"
+                                  : "bg-emerald-500/30 border border-emerald-500/50 hover:bg-emerald-500/40"
+                              )}
+                            >
+                              {isPlaying ? (
+                                <><Square className="w-4 h-4 fill-current" /> Stop</>
+                              ) : (
+                                <><Play className="w-4 h-4 fill-current ml-0.5" /> Play Now</>
+                              )}
+                            </button>
+                            <button
+                              onClick={async () => {
+                                if (queueList[0]) {
+                                  await supabase
+                                    .from('song_requests')
+                                    .delete()
+                                    .eq('id', queueList[0].id);
+                                  // Reset playing status
+                                  setIsPlaying(false);
+                                  await supabase
+                                    .from('app_settings')
+                                    .update({ value: { playing: false } })
+                                    .eq('id', 'play_status');
+                                }
+                              }}
+                              className="flex-1 flex items-center justify-center gap-2 bg-white/10 text-white text-sm font-bold tracking-wide uppercase py-3.5 rounded-[16px] transition-all border border-white/5 hover:bg-white/20 hover:scale-[1.02] active:scale-95 cursor-pointer"
+                            >
+                              Next
+                              <SkipForward className="w-4 h-4 fill-current ml-0.5" />
+                            </button>
+                          </div>
+                        ) : (
+                          /* User View: Blink indicator bila ada lagu sedang dimainkan */
+                          <div className="pb-2 pt-2">
                             {isPlaying ? (
-                              <>
-                                <Square className="w-4 h-4 fill-current" />
-                                Playing
-                              </>
+                              <div className="flex items-center justify-center gap-2.5 bg-emerald-600/20 border border-emerald-500/40 py-3.5 rounded-[16px] animate-pulse">
+                                <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping" />
+                                <span className="text-emerald-400 text-sm font-bold tracking-widest uppercase">Sedang Dimainkan</span>
+                                <Music className="w-4 h-4 text-emerald-400" />
+                              </div>
                             ) : (
-                              <>
-                                <Play className="w-4 h-4 fill-current ml-0.5" />
-                                Play Now
-                              </>
+                              <div className="flex items-center justify-center gap-2 bg-white/5 border border-white/10 py-3.5 rounded-[16px]">
+                                <span className="text-white/30 text-sm font-medium tracking-wide">Menunggu Host...</span>
+                              </div>
                             )}
-                          </button>
-                          <button
-                            onClick={async () => {
-                              if (isLoggedIn && queueList[0]) {
-                                const { error } = await supabase
-                                  .from('song_requests')
-                                  .delete()
-                                  .eq('id', queueList[0].id);
-                                if (error) console.error('Gagal melangkau lagu:', error);
-                                setIsPlaying(false);
-                              }
-                            }}
-                            disabled={!isLoggedIn}
-                            className={cn(
-                              "flex-1 flex items-center justify-center gap-2 bg-white/10 text-white text-sm font-bold tracking-wide uppercase py-3.5 rounded-[16px] transition-all border border-white/5",
-                              isLoggedIn ? "hover:bg-white/20 hover:scale-[1.02] active:scale-95 cursor-pointer" : "cursor-not-allowed opacity-80"
-                            )}
-                          >
-                            Next
-                            <SkipForward className="w-4 h-4 fill-current ml-0.5" />
-                          </button>
-                        </div>
+                          </div>
+                        )}
                       </div>
+                    </div>
+                  </div>
                     </div>
                   </div>
 
