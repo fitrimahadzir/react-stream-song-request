@@ -410,7 +410,7 @@ export default function App() {
                 <div className="bg-[#11141b]/50 border border-white/5 rounded-[20px] p-5">
                   <div className="flex items-center gap-2.5 text-white mb-5">
                     <Music className="w-5 h-5 text-emerald-400" />
-                    <h3 className="text-[15px] font-bold tracking-wide">Form Permintaan Lagu</h3>
+                    <h3 className="text-[15px] font-bold tracking-wide">Permintaan Lagu</h3>
                   </div>
 
                   {showLiveIndicator ? (
@@ -450,7 +450,7 @@ export default function App() {
                       <div className="space-y-1.5">
                         <label className="text-[10px] font-medium text-brand-light/40 uppercase tracking-widest px-1">Mesej Dedikasi (Pilihan)</label>
                         <textarea
-                          placeholder="Sebarang mesej khas untuk host?"
+                          placeholder="Tulis apa-apa mesej di sini..."
                           value={formData.message}
                           onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                           className="w-full bg-[#181c25] border border-transparent rounded-[14px] px-4 py-3 text-sm focus:outline-none focus:border-brand-primary/40 focus:ring-1 focus:ring-brand-primary/20 transition-all text-white placeholder:text-zinc-600 min-h-[100px] resize-none"
@@ -467,7 +467,7 @@ export default function App() {
                     </form>
                   ) : (
                     <div className="py-8 text-center text-brand-light/50 text-sm leading-relaxed tracking-wide">
-                      Maaf, borang permintaan lagu ditutup buat sementara waktu kerana host sedang tidak bersiaran secara langsung (offline).
+                      Host sedang offline. Permintaan lagu akan dibuka semula apabila siaran langsung bermula.
                     </div>
                   )}
                 </div>
@@ -491,11 +491,16 @@ export default function App() {
                     <p className="text-xs text-brand-light/50 mt-1 font-medium">Senarai permintaan lagu dari penonton</p>
                   </div>
                   <div className="bg-[#11141b]/50 border border-white/5 rounded-2xl p-8 text-center text-brand-light/40 text-sm leading-relaxed tracking-wide">
-                    Masih belum ada permintaan. Sila mohon di homepage jika host buka permintaan lagu.
+                    Masih belum ada permintaan.<br />Tunggu sehingga host buka form permintaan lagu untuk masukkan lagu anda.
                   </div>
                   <button
                     onClick={() => setActiveTab('dashboard')}
-                    className="w-full mt-6 py-4 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 font-bold text-[13px] rounded-[14px] flex items-center justify-center gap-2 transition-all active:scale-95"
+                    className={cn(
+                      "w-full mt-6 py-4 font-bold text-[13px] rounded-[14px] flex items-center justify-center gap-2 transition-all",
+                      showLiveIndicator
+                        ? "bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 active:scale-95"
+                        : "bg-white/5 text-white/30 border border-white/10"
+                    )}
                   >
                     <Plus className="w-4 h-4" />
                     Tambah Lagu Anda
@@ -695,7 +700,12 @@ export default function App() {
                   <div className="px-5 pt-2 pb-6">
                     <button
                       onClick={() => setActiveTab('dashboard')}
-                      className="w-full py-4 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 font-bold text-[13px] rounded-[14px] flex items-center justify-center gap-2 transition-all active:scale-95"
+                      className={cn(
+                        "w-full py-4 font-bold text-[13px] rounded-[14px] flex items-center justify-center gap-2 transition-all",
+                        showLiveIndicator
+                          ? "bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 active:scale-95"
+                          : "bg-white/5 text-white/30 border border-white/10"
+                      )}
                     >
                       <Plus className="w-4 h-4" />
                       Tambah Lagu Anda
