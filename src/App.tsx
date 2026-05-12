@@ -313,9 +313,9 @@ export default function App() {
         <main className="flex-1 overflow-y-auto pb-28 relative z-10 no-scrollbar">
 
           {activeTab === 'dashboard' && (
-            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col items-center">
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 pt-10 px-4 flex flex-col items-center">
               {/* Hero Section - Boxed Banner */}
-              <section className="relative px-4 pt-6 w-full max-w-sm">
+              <section className="relative w-full max-w-sm">
                 <div className="relative h-[240px] w-full rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
                   <img
                     src="/images/banner.jpeg"
@@ -406,7 +406,7 @@ export default function App() {
               </section>
 
               {/* Song Request Form Section */}
-              <section className="mt-12 px-4 w-full max-w-sm">
+              <section className="mt-12 px-4 w-full">
                 <div className="bg-[#11141b]/50 border border-white/5 rounded-[20px] p-5">
                   <div className="flex items-center gap-2.5 text-white mb-5">
                     <Music className="w-5 h-5 text-emerald-400" />
@@ -493,6 +493,13 @@ export default function App() {
                   <div className="bg-[#11141b]/50 border border-white/5 rounded-2xl p-8 text-center text-brand-light/40 text-sm leading-relaxed tracking-wide">
                     Masih belum ada permintaan. Sila mohon di homepage jika host buka permintaan lagu.
                   </div>
+                  <button
+                    onClick={() => setActiveTab('dashboard')}
+                    className="w-full mt-6 py-4 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 font-bold text-[13px] rounded-[14px] flex items-center justify-center gap-2 transition-all active:scale-95"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Tambah Lagu Anda
+                  </button>
                 </div>
               ) : (
                 <div className="flex flex-col">
@@ -617,13 +624,14 @@ export default function App() {
                       <div
                         key={item.id}
                         className={cn(
-                          "bg-[#2a262e] rounded-[18px] p-4 flex items-center gap-4 border-2 shadow-sm hover:border-white/10 transition-colors group relative",
+                          "bg-[#11141b]/50 rounded-[18px] p-4 flex items-center gap-4 border-2 shadow-sm hover:border-white/10 transition-colors group relative",
                           highlightedSongId === item.id
                             ? "border-emerald-500/80 shadow-[0_0_15px_rgba(16,185,129,0.3)] animate-pulse"
                             : "border-transparent"
                         )}
-                      >
-                        <div className="w-[58px] h-[58px] rounded-xl bg-black/40 overflow-hidden shrink-0 relative shadow-inner">
+                        >
+                          <div className="absolute left-0 top-3 bottom-3 w-0.5 bg-emerald-500/30 rounded-full" />
+                          <div className="w-[58px] h-[58px] rounded-xl bg-black/40 overflow-hidden shrink-0 relative shadow-inner">
                           <img src={item.coverUrl || `https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=150&auto=format&fit=crop&random=${item.id}`} alt="cover" className="w-full h-full object-cover opacity-80 mix-blend-screen" />
                         </div>
                         <div className="flex-1 min-w-0 pr-12">
@@ -683,6 +691,15 @@ export default function App() {
                         Tiada lagu seterusnya di dalam queue.
                       </div>
                     )}
+                  </div>
+                  <div className="px-5 pt-2 pb-6">
+                    <button
+                      onClick={() => setActiveTab('dashboard')}
+                      className="w-full py-4 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 font-bold text-[13px] rounded-[14px] flex items-center justify-center gap-2 transition-all active:scale-95"
+                    >
+                      <Plus className="w-4 h-4" />
+                      Tambah Lagu Anda
+                    </button>
                   </div>
                 </div>
               )}
@@ -761,32 +778,40 @@ export default function App() {
               </div>
 
               {!isLoggedIn ? (
-                <div className="bg-[#11141b]/50 border border-white/5 rounded-[20px] p-8 space-y-6">
-                  <div className="space-y-2 text-center">
-                    <h3 className="text-lg font-medium text-brand-light">Admin Login</h3>
-                    <p className="text-xs text-brand-light/50">Sila masukkan ID dan Password untuk mengakses tetapan.</p>
+                <div className="bg-[#11141b]/50 border border-white/5 rounded-[20px] p-5">
+                  <div className="flex items-center gap-2.5 text-white mb-5">
+                    <Lock className="w-5 h-5 text-emerald-400" />
+                    <h3 className="text-[15px] font-bold tracking-wide">Admin Login</h3>
                   </div>
                   <form onSubmit={handleLoginSubmit} className="space-y-4">
-                    <Input
-                      label="Admin ID"
-                      placeholder="Masukkan ID"
-                      icon={User}
-                      required
-                      value={loginForm.id}
-                      onChange={(e) => setLoginForm({ ...loginForm, id: e.target.value })}
-                    />
-                    <Input
-                      label="Password"
-                      type="password"
-                      placeholder="••••••"
-                      icon={Settings}
-                      required
-                      value={loginForm.password}
-                      onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
-                    />
-                    <Button variant="primary" className="w-fit mx-auto px-10 py-4 text-sm" type="submit">
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-medium text-brand-light/40 uppercase tracking-widest px-1">Admin ID</label>
+                      <input
+                        placeholder="Masukkan ID"
+                        required
+                        value={loginForm.id}
+                        onChange={(e) => setLoginForm({ ...loginForm, id: e.target.value })}
+                        className="w-full bg-[#181c25] border border-transparent rounded-[14px] px-4 py-3 text-sm focus:outline-none focus:border-brand-primary/40 focus:ring-1 focus:ring-brand-primary/20 transition-all text-white placeholder:text-zinc-600"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-medium text-brand-light/40 uppercase tracking-widest px-1">Password</label>
+                      <input
+                        type="password"
+                        placeholder="••••••"
+                        required
+                        value={loginForm.password}
+                        onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
+                        className="w-full bg-[#181c25] border border-transparent rounded-[14px] px-4 py-3 text-sm focus:outline-none focus:border-brand-primary/40 focus:ring-1 focus:ring-brand-primary/20 transition-all text-white placeholder:text-zinc-600"
+                      />
+                    </div>
+                    <button
+                      type="submit"
+                      className="w-full mt-2 py-3.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 font-bold text-[13px] rounded-[14px] flex items-center justify-center gap-2 transition-all active:scale-95"
+                    >
+                      <LogOut className="w-4 h-4" />
                       Log Masuk
-                    </Button>
+                    </button>
                   </form>
                 </div>
               ) : (
@@ -1081,7 +1106,7 @@ export default function App() {
 
         {/* Floating Bottom Navigation */}
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-40px)] max-w-[380px] z-[100]">
-          <nav className="bg-[#11141b]/90 backdrop-blur-xl border border-white/10 px-4 py-2.5 rounded-[32px] flex justify-between items-center shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+          <nav className="bg-[#11141b]/90 backdrop-blur-xl border border-white/10 px-4 py-2.5 rounded-2xl flex justify-between items-center shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
             <NavButton
               active={activeTab === 'dashboard'}
               icon={Home}
@@ -1201,20 +1226,16 @@ function NavButton({ icon: Icon, label, active, onClick }: { icon: any; label: s
         active ? "bg-emerald-500/15 text-emerald-400 px-5 py-2.5 gap-2" : "text-white/40 hover:text-white/60 p-2.5"
       )}
     >
-      <Icon className={cn("w-[22px] h-[22px] transition-all duration-300", active ? "stroke-[2.5px] drop-shadow-[0_0_8px_rgba(52,211,153,0.5)]" : "stroke-[2px]")} />
-      <AnimatePresence>
-        {active && (
-          <motion.span 
-            initial={{ opacity: 0, width: 0, scale: 0.9 }}
-            animate={{ opacity: 1, width: 'auto', scale: 1 }}
-            exit={{ opacity: 0, width: 0, scale: 0.9 }}
-            transition={{ duration: 0.2 }}
-            className="text-[12px] font-bold whitespace-nowrap overflow-hidden"
-          >
-            {label}
-          </motion.span>
+      <Icon className={cn("w-[22px] h-[22px] transition-all duration-300 shrink-0", active ? "stroke-[2.5px] drop-shadow-[0_0_8px_rgba(52,211,153,0.5)]" : "stroke-[2px]")} />
+      <span 
+        className={cn(
+          "text-[13px] font-bold whitespace-nowrap overflow-hidden transition-all duration-300",
+          active ? "max-w-[100px] opacity-100" : "max-w-0 opacity-0 hidden sm:block"
         )}
-      </AnimatePresence>
+        style={{ display: active ? 'block' : undefined }}
+      >
+        {label}
+      </span>
     </button>
   );
 }
