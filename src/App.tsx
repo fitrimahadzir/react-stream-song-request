@@ -765,9 +765,10 @@ export default function App() {
                         <Bell className="w-5 h-5 text-emerald-400" />
                       </div>
                       <div>
-                        <h3 className="text-[15px] font-bold text-white mb-1">Siaran Langsung Seterusnya</h3>
+                        <h3 className="text-[15px] font-bold text-white mb-1">Siaran Seterusnya</h3>
                         <p className="text-sm text-brand-light/70 leading-relaxed">
-                          Sesi <strong>{nextLiveConfig.type}</strong> seterusnya akan bermula pada <strong>{nextLiveConfig.date}</strong> jam <strong>{nextLiveConfig.time}</strong>. Jangan lupa sedia dengan request lagu anda!
+                          <strong>{nextLiveConfig.date}</strong> &bull; <strong>{nextLiveConfig.time}</strong><br />
+                          Sedia untuk request lagu? 🎤
                         </p>
                         <span className="inline-block mt-3 text-[10px] uppercase tracking-widest text-emerald-400 font-semibold bg-emerald-500/10 px-2.5 py-1 rounded-md">
                           Pengumuman
