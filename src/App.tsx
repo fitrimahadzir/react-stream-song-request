@@ -413,63 +413,95 @@ export default function App() {
                     <h3 className="text-[15px] font-bold tracking-wide">Permintaan Lagu</h3>
                   </div>
 
-                  {showLiveIndicator ? (
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                      <div className="space-y-1.5">
-                        <label className="text-[10px] font-medium text-brand-light/40 uppercase tracking-widest px-1">Tajuk Lagu</label>
-                        <input
-                          placeholder="Masukkan nama lagu..."
-                          required
-                          value={formData.songTitle}
-                          onChange={(e) => setFormData({ ...formData, songTitle: capitalizeWords(e.target.value) })}
-                          className="w-full bg-[#181c25] border border-transparent rounded-[14px] px-4 py-3 text-sm focus:outline-none focus:border-brand-primary/40 focus:ring-1 focus:ring-brand-primary/20 transition-all text-white placeholder:text-zinc-600"
-                        />
-                      </div>
-                      <div className="grid grid-cols-2 gap-3">
-                        <div className="space-y-1.5">
-                          <label className="text-[10px] font-medium text-brand-light/40 uppercase tracking-widest px-1">Nama Artis</label>
-                          <input
-                            placeholder="Siapa artisnya?"
-                            required
-                            value={formData.artistName}
-                            onChange={(e) => setFormData({ ...formData, artistName: capitalizeWords(e.target.value) })}
-                            className="w-full bg-[#181c25] border border-transparent rounded-[14px] px-4 py-3 text-sm focus:outline-none focus:border-brand-primary/40 focus:ring-1 focus:ring-brand-primary/20 transition-all text-white placeholder:text-zinc-600"
-                          />
-                        </div>
-                        <div className="space-y-1.5">
-                          <label className="text-[10px] font-medium text-brand-light/40 uppercase tracking-widest px-1">Nama Peminta</label>
-                          <input
-                            placeholder="Nama anda"
-                            required
-                            value={formData.requesterName}
-                            onChange={(e) => setFormData({ ...formData, requesterName: capitalizeWords(e.target.value) })}
-                            className="w-full bg-[#181c25] border border-transparent rounded-[14px] px-4 py-3 text-sm focus:outline-none focus:border-brand-primary/40 focus:ring-1 focus:ring-brand-primary/20 transition-all text-white placeholder:text-zinc-600"
-                          />
-                        </div>
-                      </div>
-                      <div className="space-y-1.5">
-                        <label className="text-[10px] font-medium text-brand-light/40 uppercase tracking-widest px-1">Mesej Dedikasi (Pilihan)</label>
-                        <textarea
-                          placeholder="Tulis apa-apa mesej di sini..."
-                          value={formData.message}
-                          onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                          className="w-full bg-[#181c25] border border-transparent rounded-[14px] px-4 py-3 text-sm focus:outline-none focus:border-brand-primary/40 focus:ring-1 focus:ring-brand-primary/20 transition-all text-white placeholder:text-zinc-600 min-h-[100px] resize-none"
-                        />
-                      </div>
-
-                      <button
-                        type="submit"
-                        className="w-full mt-2 py-3.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 font-bold text-[13px] rounded-[14px] flex items-center justify-center gap-2 transition-all active:scale-95"
-                      >
-                        <Send className="w-4 h-4" />
-                        Hantar Permintaan
-                      </button>
-                    </form>
-                  ) : (
-                    <div className="py-8 text-center text-brand-light/50 text-sm leading-relaxed tracking-wide">
-                      Host sedang offline. Permintaan lagu akan dibuka semula apabila siaran langsung bermula.
+                  {!showLiveIndicator && (
+                    <div className="mb-4 p-3 bg-amber-500/10 border border-amber-500/20 rounded-[12px] text-center">
+                      <p className="text-xs text-amber-400/80 font-medium leading-relaxed">
+                        Host sedang offline. Permintaan lagu ditutup dan akan dibuka semula apabila siaran langsung bermula.
+                      </p>
                     </div>
                   )}
+
+                  <form onSubmit={handleSubmit} className="space-y-4">
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-medium text-brand-light/40 uppercase tracking-widest px-1">Tajuk Lagu</label>
+                      <input
+                        placeholder="Masukkan nama lagu..."
+                        required
+                        disabled={!showLiveIndicator}
+                        value={formData.songTitle}
+                        onChange={(e) => setFormData({ ...formData, songTitle: capitalizeWords(e.target.value) })}
+                        className={cn(
+                          "w-full bg-[#181c25] border border-transparent rounded-[14px] px-4 py-3 text-sm transition-all text-white placeholder:text-zinc-600",
+                          showLiveIndicator
+                            ? "focus:outline-none focus:border-brand-primary/40 focus:ring-1 focus:ring-brand-primary/20"
+                            : "opacity-50 cursor-not-allowed"
+                        )}
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] font-medium text-brand-light/40 uppercase tracking-widest px-1">Nama Artis</label>
+                        <input
+                          placeholder="Siapa artisnya?"
+                          required
+                          disabled={!showLiveIndicator}
+                          value={formData.artistName}
+                          onChange={(e) => setFormData({ ...formData, artistName: capitalizeWords(e.target.value) })}
+                          className={cn(
+                            "w-full bg-[#181c25] border border-transparent rounded-[14px] px-4 py-3 text-sm transition-all text-white placeholder:text-zinc-600",
+                            showLiveIndicator
+                              ? "focus:outline-none focus:border-brand-primary/40 focus:ring-1 focus:ring-brand-primary/20"
+                              : "opacity-50 cursor-not-allowed"
+                          )}
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] font-medium text-brand-light/40 uppercase tracking-widest px-1">Nama Peminta</label>
+                        <input
+                          placeholder="Nama anda"
+                          required
+                          disabled={!showLiveIndicator}
+                          value={formData.requesterName}
+                          onChange={(e) => setFormData({ ...formData, requesterName: capitalizeWords(e.target.value) })}
+                          className={cn(
+                            "w-full bg-[#181c25] border border-transparent rounded-[14px] px-4 py-3 text-sm transition-all text-white placeholder:text-zinc-600",
+                            showLiveIndicator
+                              ? "focus:outline-none focus:border-brand-primary/40 focus:ring-1 focus:ring-brand-primary/20"
+                              : "opacity-50 cursor-not-allowed"
+                          )}
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-medium text-brand-light/40 uppercase tracking-widest px-1">Mesej Dedikasi (Pilihan)</label>
+                      <textarea
+                        placeholder="Tulis apa-apa mesej di sini..."
+                        disabled={!showLiveIndicator}
+                        value={formData.message}
+                        onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                        className={cn(
+                          "w-full bg-[#181c25] border border-transparent rounded-[14px] px-4 py-3 text-sm transition-all text-white placeholder:text-zinc-600 min-h-[100px] resize-none",
+                          showLiveIndicator
+                            ? "focus:outline-none focus:border-brand-primary/40 focus:ring-1 focus:ring-brand-primary/20"
+                            : "opacity-50 cursor-not-allowed"
+                        )}
+                      />
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={!showLiveIndicator}
+                      className={cn(
+                        "w-full mt-2 py-3.5 font-bold text-[13px] rounded-[14px] flex items-center justify-center gap-2 transition-all",
+                        showLiveIndicator
+                          ? "bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 active:scale-95"
+                          : "bg-white/5 text-white/30 border border-white/10 cursor-not-allowed"
+                      )}
+                    >
+                      <Send className="w-4 h-4" />
+                      Hantar Permintaan
+                    </button>
+                  </form>
                 </div>
               </section>
 
