@@ -339,9 +339,9 @@ export default function App() {
                       <motion.div
                         initial={{ y: 20, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
-                        className="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-emerald-600 text-[9px] font-black px-3 py-1 rounded-full flex items-center gap-1.5 shadow-2xl border-[2.5px] border-[#0f1118] tracking-widest text-white whitespace-nowrap z-30"
+                        className="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-pink-500 text-[9px] font-black px-3 py-1 rounded-full flex items-center gap-1.5 shadow-2xl border-[2.5px] border-[#0f1118] tracking-widest text-white whitespace-nowrap z-30"
                       >
-                        <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse shadow-[0_0_10px_white]" />
+                        <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse shadow-[0_0_10px_rgba(236,72,153,0.6)]" />
                         LIVE
                       </motion.div>
                     )}
@@ -888,7 +888,7 @@ export default function App() {
                           }}
                           className={cn(
                             "w-11 h-6 rounded-full transition-colors relative shadow-inner",
-                            showLiveIndicator ? "bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.3)]" : "bg-white/10"
+                            showLiveIndicator ? "bg-pink-500 shadow-[0_0_10px_rgba(236,72,153,0.3)]" : "bg-white/10"
                           )}
                         >
                           <span className={cn(
